@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 
 /**
  *
- * @author abota
+ * @author abotaff
  */
 public class ClientSocket extends Application {
 
