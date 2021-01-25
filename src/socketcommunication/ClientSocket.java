@@ -13,8 +13,10 @@ import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -33,6 +35,7 @@ public class ClientSocket extends Application {
     TextField ipTF = new TextField();
     TextField messageTF = new TextField();
     TextArea chat = new TextArea();
+    Label myIP = new Label(" My IP:");
     Button sendBtn, listenBtn;
 
     @Override
@@ -57,12 +60,25 @@ public class ClientSocket extends Application {
         // style scene and add components
         VBox root = new VBox(20);
         HBox buttonsHBox = new HBox(20);
-        buttonsHBox.setAlignment(Pos.CENTER);
+
+        HBox serverBottomHBox = new HBox(20);
+        serverBottomHBox.getChildren().addAll(ipTF, listenBtn);
+
+        VBox serverVBox = new VBox(20);
+        serverVBox.setPadding(new Insets(20, 20, 20, 20));
+        serverVBox.setAlignment(Pos.CENTER_LEFT);
+        serverVBox.setStyle("-fx-background-color:lightgrey");
+        serverVBox.getChildren().addAll(myIP, serverBottomHBox);
+
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(20, 20, 20, 20));
+        buttonsHBox.setPadding(new Insets(20, 20, 20, 20));
+        buttonsHBox.setAlignment(Pos.CENTER);
+        buttonsHBox.setStyle("-fx-border-color: grey");
+        buttonsHBox.getChildren().addAll(messageTF, sendBtn);
 
-        buttonsHBox.getChildren().addAll(listenBtn, sendBtn);
-        root.getChildren().addAll(ipTF, messageTF, chat, buttonsHBox);
+        root.setStyle("-fx-border-color: grey");
+        root.getChildren().addAll(serverVBox, chat, buttonsHBox);
 
         Scene scene = new Scene(root, 300, 250);
 
