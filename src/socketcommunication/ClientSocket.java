@@ -3,10 +3,12 @@ package socketcommunication;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +23,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 /**
@@ -35,7 +38,7 @@ public class ClientSocket extends Application {
     TextField ipTF = new TextField();
     TextField messageTF = new TextField();
     TextArea chat = new TextArea();
-    Label myIP = new Label(" My IP:");
+    Label myIP = new Label();
     Button sendBtn, listenBtn;
 
     @Override
@@ -47,9 +50,13 @@ public class ClientSocket extends Application {
         ipTF.setMaxSize(140, 40);
         messageTF.setPromptText("Enter your message");
         messageTF.setTooltip(new Tooltip("Your message here"));
-        messageTF.setMaxSize(140, 40);
+        messageTF.setPrefSize(215, 40);
         chat.setEditable(false);
         chat.setPromptText("Your chat messages will appear here ..");
+
+        // Labels
+        myIP.setText((" My IP: " + getMyIP()));
+        myIP.setTextFill(Color.RED);
 
         // buttons
         sendBtn = new Button("Send Message");
@@ -58,32 +65,36 @@ public class ClientSocket extends Application {
         listenBtn.setOnAction(e -> listen());
 
         // style scene and add components
-        VBox root = new VBox(20);
-        HBox buttonsHBox = new HBox(20);
-
         HBox serverBottomHBox = new HBox(20);
         serverBottomHBox.getChildren().addAll(ipTF, listenBtn);
 
         VBox serverVBox = new VBox(20);
-        serverVBox.setPadding(new Insets(20, 20, 20, 20));
-        serverVBox.setAlignment(Pos.CENTER_LEFT);
-        serverVBox.setStyle("-fx-background-color:lightgrey");
+        serverVBox.setPadding(new Insets(10, 5, 5, 5));
+        serverVBox.setAlignment(Pos.BASELINE_LEFT);
+        serverVBox.setStyle("-fx-border-color: grey");
         serverVBox.getChildren().addAll(myIP, serverBottomHBox);
 
-        root.setAlignment(Pos.CENTER);
-        root.setPadding(new Insets(20, 20, 20, 20));
-        buttonsHBox.setPadding(new Insets(20, 20, 20, 20));
-        buttonsHBox.setAlignment(Pos.CENTER);
-        buttonsHBox.setStyle("-fx-border-color: grey");
+        HBox buttonsHBox = new HBox(5);
+        buttonsHBox.setAlignment(Pos.BASELINE_LEFT);
         buttonsHBox.getChildren().addAll(messageTF, sendBtn);
 
-        root.setStyle("-fx-border-color: grey");
-        root.getChildren().addAll(serverVBox, chat, buttonsHBox);
+        VBox chatAndButtonsVBox = new VBox(20);
+        chatAndButtonsVBox.getChildren().addAll(chat, buttonsHBox);
+        chatAndButtonsVBox.setStyle("-fx-border-color: grey");
+        chatAndButtonsVBox.setAlignment(Pos.CENTER);
+        chatAndButtonsVBox.setPadding(new Insets(10, 5, 5, 5));
 
-        Scene scene = new Scene(root, 300, 250);
+        VBox root = new VBox(20);
+        root.setAlignment(Pos.CENTER);
+        root.setPadding(new Insets(20, 10, 20, 10));
+        root.setStyle("-fx-border-color: grey");
+        root.getChildren().addAll(serverVBox, chatAndButtonsVBox);
+
+        Scene scene = new Scene(root, 350, 350);
 
         primaryStage.setTitle("Socket Communication");
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 
@@ -124,6 +135,8 @@ public class ClientSocket extends Application {
         remoteIP = ipTF.getText();
 
         try {
+            
+            
             ServerSocket ss = new ServerSocket(6666);
             Socket s = ss.accept();//establishes connection  
 
@@ -148,10 +161,18 @@ public class ClientSocket extends Application {
     }
 
     // get my IP
-    public InetAddress getMyIP() throws UnknownHostException {
-        InetAddress inetAddress = InetAddress.getLocalHost();
+    public String getMyIP() {
+        InetAddress inetAddress = null;
+        try {
+            inetAddress = InetAddress.getLocalHost();
 
-        return inetAddress;
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(ClientSocket.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return inetAddress.getHostAddress();
+
+
+
     }
 
 }
